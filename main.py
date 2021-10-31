@@ -7,6 +7,7 @@ from pydantic import Field
 #FastAPI
 from fastapi import FastAPI
 from fastapi import Body, Query, Path
+from fastapi import status
 
 
 app = FastAPI()
@@ -25,7 +26,7 @@ class Location(BaseModel):
     state: str
     country: str
 
-class Person(BaseModel):
+class PersonBase(BaseModel):
     first_name: str = Field(
         ...,
         min_length=1,
@@ -46,11 +47,12 @@ class Person(BaseModel):
         )
     hair_color: Optional[HairColor] = Field(default=None)
     is_married: Optional[bool] = Field(default=None)
+
+class Person(PersonBase):    
     password: str = Field(
         ...,
-        min_length=1,
+        min_length=8
         )
-
     # class Config:
     #     schema_extra = {
     #         "example": {
@@ -61,36 +63,24 @@ class Person(BaseModel):
     #             "is_married": False
     #         }   
     #     }
+    
+class PersonOut(PersonBase):
+    pass
 
-class PersonOut(BaseModel):
-    first_name: str = Field(
-        ...,
-        min_length=1,
-        max_length=50,
-        # example = "Juanito"
-        ) 
-    last_name: str = Field(
-        ...,
-        min_length=1,
-        max_length=50,
-        # example = "Villadita"
-        )
-    age: int = Field(
-        ...,
-        gt=0,
-        le=115
-        # example = 18
-        )
-    hair_color: Optional[HairColor] = Field(default=None)
-    is_married: Optional[bool] = Field(default=None)
-
-@app.get('/')
+@app.get(
+    path='/',
+    status_code=status.HTTP_200_OK
+    )
 def home():
     return {"Hello" : "World!"}
 
 # Request and Response Body 
 
-@app.post('/person/new', response_model=PersonOut)
+@app.post(
+    path='/person/new',
+    response_model=PersonOut,
+    status_code=status.HTTP_201_CREATED
+    )
 def create_person(person: Person = Body(...)):
     return person
 
@@ -115,7 +105,10 @@ def show_person(
 
 # Validaciones: Path Parameters
 
-@app.get('/person/detail/{person_id}')
+@app.get(
+    path='/person/detail/{person_id}',
+    status_code=status.HTTP_200_OK
+    )
 def show_person(
     person_id: int = Path(
         ...,
