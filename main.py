@@ -29,20 +29,34 @@ class Person(BaseModel):
     first_name: str = Field(
         ...,
         min_length=1,
-        max_length=50
+        max_length=50,
+        # example = "Juanito"
         ) 
     last_name: str = Field(
         ...,
         min_length=1,
-        max_length=50
+        max_length=50,
+        # example = "Villadita"
         )
     age: int = Field(
         ...,
         gt=0,
         le=115
+        # example = 18
         )
     hair_color: Optional[HairColor] = Field(default=None)
     is_married: Optional[bool] = Field(default=None)
+
+    # class Config:
+    #     schema_extra = {
+    #         "example": {
+    #             "first_name": "Juan Andres",
+    #             "last_name": "Villada Lopez",
+    #             "age": 20,
+    #             "hair_color": "black",
+    #             "is_married": False
+    #         }   
+    #     }
 
 @app.get('/')
 def home():
@@ -97,9 +111,10 @@ def update_person(
         description="This is the person's id. It's required and greater than 0"
     ),
     person: Person = Body(...),
-    location: Location = Body(...)
+    # location: Location = Body(...)
 ):
-    results = person.dict()
-    results.update(location.dict())
+    # results = person.dict()
+    # results.update(location.dict())
 
-    return results
+    # return results
+    return person
