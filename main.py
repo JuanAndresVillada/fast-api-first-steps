@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from pydantic import Field
 #FastAPI
 from fastapi import FastAPI
-from fastapi import Body, Query, Path
+from fastapi import Body, Query, Path, Form
 from fastapi import status
 
 
@@ -67,6 +67,10 @@ class Person(PersonBase):
 class PersonOut(PersonBase):
     pass
 
+class LoginOut(BaseModel):
+    username: str = Field(...,max_length=20,example='Juanito2021')
+    massage: str = Field(default="Login Succesfully!")
+
 @app.get(
     path='/',
     status_code=status.HTTP_200_OK
@@ -86,7 +90,9 @@ def create_person(person: Person = Body(...)):
 
 # Validaciones: Query Parameters
 
-@app.get('/person/detail')
+@app.get(
+    path='/person/detail',
+    status_code=status.HTTP_202_ACCEPTED)
 def show_person(
     name: Optional[str] = Query(
         None,
@@ -121,7 +127,10 @@ def show_person(
 
 # Validaciones: Request Body
 
-@app.put('/person/{person_id}')
+@app.put(
+    path='/person/{person_id}',
+    status_code=status.HTTP_200_OK
+    )
 def update_person(
     person_id: int = Path(
         ..., 
@@ -137,3 +146,13 @@ def update_person(
 
     # return results
     return person
+
+# Formularios
+
+@app.post(
+    path='/login',
+    response_model=LoginOut,
+    status_code=status.HTTP_200_OK
+)
+def login(username: str = Form(...), password: str = Form(...)):
+    return LoginOut(username=username) 
