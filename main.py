@@ -136,6 +136,7 @@ persons = [1, 2, 3, 4, 5]
 @app.get(
     path='/person/detail/{person_id}',
     status_code=status.HTTP_200_OK,
+    summary="show persohghjfydfns",
     tags=["Persons"]
     )
 def show_person(
